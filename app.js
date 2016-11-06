@@ -28,7 +28,7 @@ app.post('/hook', function (req, res) {
     var foursquareShout = emoji;
 
     if (online != false) { console.log("Unsupported transaction: online."); res.send({}); return; };
-    
+
     Venue.find({ radius: 100.0, ll: address.latitude + "," + address.longitude })
         .then(function(body) {
             var venues = body
@@ -40,9 +40,12 @@ app.post('/hook', function (req, res) {
                 .filter(function (venue) {
                     return venue.attributes.location.postalCode == address.postcode;
                 });
-            
-            if (venues.length == 0) { console.log("Error: No matching venues.", res.send({}); return }
-            
+
+            if (venues.length == 0) {
+              console.log("Error: No matching venues.");
+              return res.send({});
+            }
+
             var venue = venues[0];
             venue.accessToken(foursquareUserToken)
                 .checkin({ shout: foursquareShout }, function (error, result) {
